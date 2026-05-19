@@ -1,0 +1,9 @@
+{
+  "name": "@workspace/site",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node /home/runner/workspace/artifacts/site/serve.mjs"
+  }
+}

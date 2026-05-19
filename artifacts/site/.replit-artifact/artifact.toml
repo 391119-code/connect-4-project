@@ -1,0 +1,26 @@
+kind = "web"
+previewPath = "/"
+title = "My Website"
+version = "1.0.0"
+id = "artifacts/site"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 3000
+
+[services.development]
+run = "pnpm --filter @workspace/site run dev"
+
+[services.development.health.startup]
+path = "/healthz"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/site", "run", "build" ]
+publicDir = "artifacts/site/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
