@@ -59,8 +59,6 @@ const server = http.createServer((req, res) => {
   res.end('<h1>404 Not Found</h1>');
 });
 
-setTimeout(() => {
-  server.listen(PORT, '::', () => {
-    console.log(`Static server running on port ${PORT}`);
-  });
-}, 3000);
+server.listen(PORT, '::', () => {
+  console.log(`Static server running on port ${PORT}`);
+});

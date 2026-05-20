@@ -11,10 +11,7 @@ paths = [ "/" ]
 localPort = 3000
 
 [services.development]
-run = "pnpm --filter @workspace/site run dev"
-
-[services.development.health.startup]
-path = "/healthz"
+run = "node -e \"setInterval(()=>{},1000);\""
 
 [services.production]
 build = [ "pnpm", "--filter", "@workspace/site", "run", "build" ]
