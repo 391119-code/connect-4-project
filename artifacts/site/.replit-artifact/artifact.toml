@@ -11,7 +11,7 @@ paths = [ "/" ]
 localPort = 3000
 
 [services.development]
-run = "node -e \"setInterval(()=>{},1000);\""
+run = "PORT=3000 node /home/runner/workspace/artifacts/site/serve.mjs"
 
 [services.production]
 build = [ "pnpm", "--filter", "@workspace/site", "run", "build" ]
