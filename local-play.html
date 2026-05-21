@@ -3,25 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connect 4 Arena - Home</title>
+    <title>Connect 4 Arena - Local Play</title>
     <style>
-        /* Temporary basic styles just to keep our navigation readable */
-        nav {
-            background-color: #333;
-            padding: 10px;
+        /* Keep your existing Nav styles here */
+        nav { background-color: #333; padding: 10px; }
+        nav a { color: white; margin-right: 15px; text-decoration: none; font-family: Arial, sans-serif; }
+        nav a:hover { text-decoration: underline; }
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 0; }
+        main { padding: 20px; display: flex; flex-direction: column; align-items: center; }
+
+        /* Game Board Styles */
+        #game-status {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
         }
-        nav a {
-            color: white;
-            margin-right: 15px;
-            text-decoration: none;
-            font-family: Arial, sans-serif;
+
+        #board {
+            display: grid;
+            grid-template-columns: repeat(7, 60px);
+            grid-template-rows: repeat(6, 60px);
+            gap: 10px;
+            background-color: #0056b3;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
-        nav a:hover {
-            text-decoration: underline;
+
+        .cell {
+            width: 60px;
+            height: 60px;
+            background-color: white;
+            border-radius: 50%; /* Makes the slots circular */
+            cursor: pointer;
+            box-shadow: inset 0 3px 5px rgba(0,0,0,0.2);
         }
-        main {
-            padding: 20px;
-            font-family: Arial, sans-serif;
+
+        .cell.red { background-color: #dc3545; }
+        .cell.yellow { background-color: #ffc107; }
+        
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -40,9 +65,119 @@
     </nav>
 
     <main>
-        <h1>Welcome to the Connect 4 Web Arena!</h1>
-        <p>This is the main content placeholder. Customize this text for each page!</p>
+        <h1>Local Couch Co-op</h1>
+        <div id="game-status">Red's Turn!</div>
+        <div id="board"></div>
+        <button id="reset-btn">Reset Game</button>
     </main>
 
-    </body>
+    <script>
+        // Game Constants & State
+        const ROWS = 6;
+        const COLS = 7;
+        let boardState = []; // This will be our 2D array (in memory)
+        let currentPlayer = 'red'; // 'red' goes first
+        let gameActive = true;
+
+        const boardElement = document.getElementById('board');
+        const statusElement = document.getElementById('game-status');
+        const resetBtn = document.getElementById('reset-btn');
+
+        // 1. Initialize the board structure
+        function initGame() {
+            boardState = [];
+            boardElement.innerHTML = '';
+            currentPlayer = 'red';
+            gameActive = true;
+            statusElement.textContent = "Red's Turn!";
+            statusElement.style.color = '#dc3545';
+
+            for (let r = 0; r < ROWS; r++) {
+                let row = [];
+                for (let c = 0; c < COLS; c++) {
+                    row.push(null); // null means empty slot
+
+                    // Create the physical HTML element for the UI
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    cell.dataset.row = r;
+                    cell.dataset.col = c;
+                    
+                    // Listen for clicks on columns
+                    cell.addEventListener('click', () => handleDrop(c));
+                    boardElement.appendChild(cell);
+                }
+                boardState.push(row);
+            }
+        }
+
+        // 2. Handle dropping a piece (Gravity)
+        function handleDrop(col) {
+            if (!gameActive) return;
+
+            // Loop backwards (from bottom row up) to find the first empty slot
+            for (let r = ROWS - 1; r >= 0; r--) {
+                if (boardState[r][col] === null) {
+                    // Update our JS array memory
+                    boardState[r][col] = currentPlayer;
+                    
+                    // Update the HTML UI
+                    const cell = document.querySelector(`.cell[data-row="${r}"][data-col="${col}"]`);
+                    cell.classList.add(currentPlayer);
+
+                    // Check if this move won the game
+                    if (checkWin(r, col)) {
+                        gameActive = false;
+                        statusElement.textContent = `${currentPlayer.toUpperCase()} WINS!`;
+                        return; // Stop the function, game is over
+                    }
+
+                    // Switch turns
+                    currentPlayer = currentPlayer === 'red' ? 'yellow' : 'red';
+                    statusElement.textContent = currentPlayer === 'red' ? "Red's Turn!" : "Yellow's Turn!";
+                    statusElement.style.color = currentPlayer === 'red' ? '#dc3545' : '#ffc107';
+                    return; // Break the loop once we drop the piece
+                }
+            }
+        }
+
+        // 3. Win Detection Logic
+        function checkWin(row, col) {
+            // Helper function to count matching pieces in a specific direction (dx, dy)
+            function countDirection(dx, dy) {
+                let count = 0;
+                let r = row + dy;
+                let c = col + dx;
+
+                // Keep moving in the direction as long as it's the same color
+                while (r >= 0 && r < ROWS && c >= 0 && c < COLS && boardState[r][c] === currentPlayer) {
+                    count++;
+                    r += dy;
+                    c += dx;
+                }
+                return count;
+            }
+
+            // We check both sides of the piece we just dropped to total it up.
+            // A total of 3 + the piece we just dropped = 4 in a row.
+            
+            // Horizontal check (left and right)
+            if (countDirection(-1, 0) + countDirection(1, 0) >= 3) return true;
+            // Vertical check (down only, since pieces drop)
+            if (countDirection(0, 1) >= 3) return true;
+            // Diagonal / (down-left and up-right)
+            if (countDirection(-1, 1) + countDirection(1, -1) >= 3) return true;
+            // Diagonal \ (up-left and down-right)
+            if (countDirection(-1, -1) + countDirection(1, 1) >= 3) return true;
+
+            return false;
+        }
+
+        // Reset the game when button is clicked
+        resetBtn.addEventListener('click', initGame);
+
+        // Start the game on page load
+        initGame();
+    </script>
+</body>
 </html>
