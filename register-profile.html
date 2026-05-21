@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connect 4 Arena - Home</title>
+    <title>Connect 4 Arena - Profile & Auth</title>
     <style>
-        /* Temporary basic styles just to keep our navigation readable */
+        /* Navigation Styles */
         nav {
             background-color: #333;
             padding: 10px;
@@ -19,9 +19,116 @@
         nav a:hover {
             text-decoration: underline;
         }
+        
+        /* Main Layout Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
         main {
             padding: 20px;
-            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Form Styles */
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="password"],
+        .form-group input[type="email"],
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .radio-group {
+            display: flex;
+            gap: 15px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #004494;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            margin-top: 10px;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        /* Profile Display Styles */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        .profile-pic-display {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #333;
+            background-color: black; /* Failsafe background */
+        }
+        .profile-details p {
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+        
+        /* Utility */
+        .hidden {
+            display: none;
+        }
+        .toggle-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+        .toggle-link a {
+            color: #0056b3;
+            cursor: pointer;
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -40,9 +147,312 @@
     </nav>
 
     <main>
-        <h1>Welcome to the Connect 4 Web Arena!</h1>
-        <p>This is the main content placeholder. Customize this text for each page!</p>
+        <div class="container">
+            
+            <div id="login-section" class="hidden">
+                <h2>Player Login</h2>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-username">Username:</label>
+                        <input type="text" id="login-username" value="DemoPlayer1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password:</label>
+                        <input type="password" id="login-password" value="DemoPass123!" required>
+                    </div>
+                    <button type="submit">Log In</button>
+                </form>
+                <div class="toggle-link">
+                    Need an account? <a id="show-register">Register here</a>
+                </div>
+            </div>
+
+            <div id="register-section">
+                <h2 id="form-header">Create Your Player Profile</h2>
+                <form id="register-form">
+                    <div class="form-group">
+                        <label for="reg-username">1. Username:</label>
+                        <input type="text" id="reg-username" value="DemoPlayer1" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="reg-password">2. Password:</label>
+                        <input type="password" id="reg-password" value="DemoPass123!" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-email">3. Email Address:</label>
+                        <input type="email" id="reg-email" value="demo@connect4arena.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-pic">4. Profile Picture (Optional):</label>
+                        <input type="file" id="reg-pic" accept="image/*">
+                        <small style="display:block; margin-top:5px; color:#666;" id="pic-note">Leave blank to keep current picture when editing.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>5. Favorite Piece Color:</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="fav-color" value="Red" id="color-red" checked> Red</label>
+                            <label><input type="radio" name="fav-color" value="Yellow" id="color-yellow"> Yellow</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-bio">6. Player Bio:</label>
+                        <textarea id="reg-bio" rows="3">I'm here to drop tokens and win games!</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-skill">7. Skill Level:</label>
+                        <select id="reg-skill">
+                            <option value="Beginner">Beginner</option>
+                            <option value="Intermediate" selected>Intermediate</option>
+                            <option value="Expert">Expert</option>
+                            <option value="Grandmaster">Grandmaster</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-mode">8. Favorite Game Mode:</label>
+                        <select id="reg-mode">
+                            <option value="Vs AI">Vs AI</option>
+                            <option value="Local Couch Co-op" selected>Local Couch Co-op</option>
+                            <option value="Online Multiplayer">Online Multiplayer</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-phrase">9. Victory Catchphrase:</label>
+                        <input type="text" id="reg-phrase" value="Four in a row, let's go!">
+                    </div>
+
+                    <button type="submit" id="submit-btn">Complete Registration</button>
+                    <button type="button" id="cancel-edit-btn" class="btn-danger hidden">Cancel</button>
+                </form>
+                <div class="toggle-link" id="register-toggle-text">
+                    Already have an account? <a id="show-login">Log in here</a>
+                </div>
+            </div>
+
+            <div id="profile-section" class="hidden">
+                <h2>Arena Dossier</h2>
+                
+                <div class="profile-header">
+                    <img id="display-pic" class="profile-pic-display" src="" alt="Profile Picture">
+                    <div>
+                        <h3 id="display-username" style="margin: 0; font-size: 24px;"></h3>
+                        <p id="display-phrase" style="font-style: italic; color: #666; margin-top: 5px;"></p>
+                    </div>
+                </div>
+
+                <div class="profile-details">
+                    <p><strong>Email:</strong> <span id="display-email"></span></p>
+                    <p><strong>Favorite Color:</strong> <span id="display-color"></span></p>
+                    <p><strong>Skill Level:</strong> <span id="display-skill"></span></p>
+                    <p><strong>Favorite Mode:</strong> <span id="display-mode"></span></p>
+                    <p><strong>Bio:</strong> <br><span id="display-bio"></span></p>
+                </div>
+
+                <button id="edit-btn" class="btn-secondary">Edit Profile</button>
+                <button id="logout-btn" class="btn-danger">Log Out</button>
+            </div>
+
+        </div>
     </main>
 
-    </body>
+    <script>
+        // DOM Elements
+        const loginSection = document.getElementById('login-section');
+        const registerSection = document.getElementById('register-section');
+        const profileSection = document.getElementById('profile-section');
+        
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const logoutBtn = document.getElementById('logout-btn');
+        const editBtn = document.getElementById('edit-btn');
+        const cancelEditBtn = document.getElementById('cancel-edit-btn');
+        
+        const showLoginBtn = document.getElementById('show-login');
+        const showRegisterBtn = document.getElementById('show-register');
+
+        // Toggle Views between Login and Register
+        showLoginBtn.addEventListener('click', () => {
+            resetFormToRegisterMode();
+            registerSection.classList.add('hidden');
+            loginSection.classList.remove('hidden');
+        });
+
+        showRegisterBtn.addEventListener('click', () => {
+            resetFormToRegisterMode();
+            loginSection.classList.add('hidden');
+            registerSection.classList.remove('hidden');
+        });
+
+        // State Management - Uses sessionStorage to stay logged in until tab closes
+        function checkLoginState() {
+            // sessionStorage clears when the tab closes. localStorage does not.
+            const activeSession = sessionStorage.getItem('connect4_active_session');
+            
+            if (activeSession) {
+                // User is actively logged in, show profile
+                const user = JSON.parse(activeSession);
+                
+                document.getElementById('display-username').textContent = user.username;
+                document.getElementById('display-email').textContent = user.email;
+                document.getElementById('display-color').textContent = user.color;
+                document.getElementById('display-bio').textContent = user.bio || "No bio provided.";
+                document.getElementById('display-skill').textContent = user.skill;
+                document.getElementById('display-mode').textContent = user.mode;
+                document.getElementById('display-phrase').textContent = `"${user.phrase || "I let my checkers do the talking."}"`;
+                
+                // Load image or a solid black square SVG as a fallback
+                document.getElementById('display-pic').src = user.profilePic || "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='black'/%3E%3C/svg%3E";
+                
+                // Hide Auth, Show Profile
+                loginSection.classList.add('hidden');
+                registerSection.classList.add('hidden');
+                profileSection.classList.remove('hidden');
+            } else {
+                // Show Login by default if logged out
+                profileSection.classList.add('hidden');
+                registerSection.classList.add('hidden');
+                loginSection.classList.remove('hidden');
+            }
+        }
+
+        // --- EDIT PROFILE LOGIC ---
+        editBtn.addEventListener('click', () => {
+            const user = JSON.parse(sessionStorage.getItem('connect4_active_session'));
+            
+            // Populate form with current data
+            document.getElementById('reg-username').value = user.username;
+            document.getElementById('reg-password').value = user.password;
+            document.getElementById('reg-email').value = user.email;
+            document.getElementById('reg-bio').value = user.bio;
+            document.getElementById('reg-skill').value = user.skill;
+            document.getElementById('reg-mode').value = user.mode;
+            document.getElementById('reg-phrase').value = user.phrase;
+            
+            if (user.color === "Red") {
+                document.getElementById('color-red').checked = true;
+            } else {
+                document.getElementById('color-yellow').checked = true;
+            }
+
+            // Change form appearance for Editing
+            document.getElementById('form-header').textContent = "Update Your Profile";
+            document.getElementById('submit-btn').textContent = "Save Changes";
+            document.getElementById('register-toggle-text').classList.add('hidden');
+            cancelEditBtn.classList.remove('hidden');
+            
+            profileSection.classList.add('hidden');
+            registerSection.classList.remove('hidden');
+        });
+
+        cancelEditBtn.addEventListener('click', () => {
+            resetFormToRegisterMode();
+            checkLoginState();
+        });
+
+        function resetFormToRegisterMode() {
+            document.getElementById('form-header').textContent = "Create Your Player Profile";
+            document.getElementById('submit-btn').textContent = "Complete Registration";
+            document.getElementById('register-toggle-text').classList.remove('hidden');
+            cancelEditBtn.classList.add('hidden');
+            // We don't clear values here so your demo autofill remains intact!
+        }
+
+        // --- REGISTRATION & UPDATE SUBMIT ---
+        registerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById('reg-pic');
+            const colorRadios = document.getElementsByName('fav-color');
+            let selectedColor = "Red";
+            for (let radio of colorRadios) {
+                if (radio.checked) selectedColor = radio.value;
+            }
+
+            // Check if there is an existing picture we should keep
+            let existingPic = null;
+            const currentSession = sessionStorage.getItem('connect4_active_session');
+            if (currentSession) {
+                existingPic = JSON.parse(currentSession).profilePic;
+            }
+
+            const userData = {
+                username: document.getElementById('reg-username').value,
+                password: document.getElementById('reg-password').value,
+                email: document.getElementById('reg-email').value,
+                color: selectedColor,
+                bio: document.getElementById('reg-bio').value,
+                skill: document.getElementById('reg-skill').value,
+                mode: document.getElementById('reg-mode').value,
+                phrase: document.getElementById('reg-phrase').value,
+                profilePic: existingPic // Default to existing if updating
+            };
+
+            // Handle Image Upload reading
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    userData.profilePic = event.target.result; // Base64 string
+                    saveAndLogin(userData);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                saveAndLogin(userData);
+            }
+        });
+
+        // Helper to save user and update UI
+        function saveAndLogin(userData) {
+            // Save to mock "Database" (localStorage - persists forever)
+            localStorage.setItem('connect4_db_account', JSON.stringify(userData));
+            
+            // Save to active session (sessionStorage - clears when tab closes)
+            sessionStorage.setItem('connect4_active_session', JSON.stringify(userData));
+            
+            resetFormToRegisterMode();
+            checkLoginState();
+        }
+
+        // --- LOGIN LOGIC ---
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const inputUser = document.getElementById('login-username').value;
+            const inputPass = document.getElementById('login-password').value;
+            
+            // Look up the account in the mock Database
+            const dbAccountStr = localStorage.getItem('connect4_db_account');
+            
+            if (dbAccountStr) {
+                const dbAccount = JSON.parse(dbAccountStr);
+                // Verify credentials
+                if (inputUser === dbAccount.username && inputPass === dbAccount.password) {
+                    // Success! Start a new active session
+                    sessionStorage.setItem('connect4_active_session', JSON.stringify(dbAccount));
+                    checkLoginState();
+                } else {
+                    alert("Incorrect username or password!");
+                }
+            } else {
+                alert("No account found! Please register first.");
+            }
+        });
+
+        // --- LOGOUT LOGIC ---
+        logoutBtn.addEventListener('click', function() {
+            // Clear only the active session. The account stays in localStorage Database.
+            sessionStorage.removeItem('connect4_active_session');
+            checkLoginState();
+        });
+
+        // Initialize Page
+        checkLoginState();
+    </script>
+
+</body>
 </html>
