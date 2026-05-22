@@ -3,26 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connect 4 Arena - Home</title>
+    <title>Connect 4 Arena - Vs AI</title>
     <style>
-        /* Temporary basic styles just to keep our navigation readable */
-        nav {
-            background-color: #333;
-            padding: 10px;
+        nav { background-color: #333; padding: 10px; }
+        nav a { color: white; margin-right: 15px; text-decoration: none; font-family: Arial, sans-serif; }
+        nav a:hover { text-decoration: underline; }
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 0; }
+        main { padding: 20px; display: flex; flex-direction: column; align-items: center; }
+
+        #game-status {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
         }
-        nav a {
+
+        #board {
+            display: grid;
+            grid-template-columns: repeat(7, 60px);
+            grid-template-rows: repeat(6, 60px);
+            gap: 10px;
+            background-color: #0056b3;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .cell {
+            width: 60px;
+            height: 60px;
+            background-color: white;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: inset 0 3px 5px rgba(0,0,0,0.2);
+            transition: background-color 0.1s ease;
+        }
+
+        /* Player is Red, AI is Yellow */
+        .cell.red { background-color: #dc3545; cursor: default; }
+        .cell.yellow { background-color: #ffc107; cursor: default; }
+
+        /* When it's the AI's turn, disable pointer cursor on the board */
+        #board.ai-thinking .cell { cursor: not-allowed; }
+
+        #difficulty-selector {
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        #difficulty-selector label { font-weight: bold; margin-right: 10px; }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #0056b3;
             color: white;
-            margin-right: 15px;
-            text-decoration: none;
-            font-family: Arial, sans-serif;
+            border: none;
+            border-radius: 5px;
         }
-        nav a:hover {
-            text-decoration: underline;
-        }
-        main {
-            padding: 20px;
-            font-family: Arial, sans-serif;
-        }
+        button:hover { background-color: #004494; }
     </style>
 </head>
 <body>
@@ -40,9 +79,306 @@
     </nav>
 
     <main>
-        <h1>Welcome to the Connect 4 Web Arena!</h1>
-        <p>This is the main content placeholder. Customize this text for each page!</p>
+        <h1>Play vs AI</h1>
+
+        <div id="difficulty-selector">
+            <label for="difficulty">AI Difficulty:</label>
+            <select id="difficulty">
+                <option value="easy">Easy (Random)</option>
+                <option value="medium" selected>Medium (Smart)</option>
+                <option value="hard">Hard (Ruthless)</option>
+            </select>
+        </div>
+
+        <div id="game-status">Your Turn! (Red)</div>
+        <div id="board"></div>
+        <button id="reset-btn">New Game</button>
     </main>
 
-    </body>
+    <script>
+        // =============================================
+        // CONSTANTS & STATE
+        // =============================================
+        const ROWS = 6;
+        const COLS = 7;
+        const PLAYER = 'red';   // Human player
+        const AI     = 'yellow'; // Computer opponent
+
+        let boardState = [];   // 2D array tracking piece positions
+        let gameActive = true; // Flips to false when someone wins or board is full
+        let isAITurn   = false; // Prevents player from clicking during AI thinking
+
+        const boardElement  = document.getElementById('board');
+        const statusElement = document.getElementById('game-status');
+        const resetBtn      = document.getElementById('reset-btn');
+        const difficultySelect = document.getElementById('difficulty');
+
+        // =============================================
+        // INIT — Build the board from scratch
+        // =============================================
+        function initGame() {
+            boardState = [];
+            boardElement.innerHTML = '';
+            boardElement.classList.remove('ai-thinking');
+            gameActive = true;
+            isAITurn   = false;
+            statusElement.textContent = 'Your Turn! (Red)';
+            statusElement.style.color = '#dc3545';
+
+            for (let r = 0; r < ROWS; r++) {
+                let row = [];
+                for (let c = 0; c < COLS; c++) {
+                    row.push(null);
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    cell.dataset.col = c;
+                    // Each cell listens for a click and passes its column number
+                    cell.addEventListener('click', () => handlePlayerDrop(c));
+                    boardElement.appendChild(cell);
+                }
+                boardState.push(row);
+            }
+        }
+
+        // =============================================
+        // DROP LOGIC — Shared by player and AI
+        // Finds the lowest empty row in the given column
+        // =============================================
+        function dropPiece(col, color) {
+            // Loop from the bottom row upward
+            for (let r = ROWS - 1; r >= 0; r--) {
+                if (boardState[r][col] === null) {
+                    boardState[r][col] = color; // Update JS memory
+                    // Update the matching HTML cell's color class
+                    const cell = document.querySelector(`.cell[data-col="${col}"]:nth-child(${r * COLS + col + 1})`);
+                    // Re-query all cells and find the right one by row+col index
+                    const allCells = boardElement.querySelectorAll('.cell');
+                    allCells[r * COLS + col].classList.add(color);
+                    return r; // Return which row the piece landed on
+                }
+            }
+            return -1; // Column is full — no drop possible
+        }
+
+        // =============================================
+        // PLAYER TURN
+        // =============================================
+        function handlePlayerDrop(col) {
+            // Do nothing if the game is over or it's the AI's turn
+            if (!gameActive || isAITurn) return;
+
+            const row = dropPiece(col, PLAYER);
+            if (row === -1) return; // Column full, ignore click
+
+            // Check if the player just won
+            if (checkWin(row, col, PLAYER)) {
+                statusElement.textContent = '🎉 You Win!';
+                statusElement.style.color = '#dc3545';
+                gameActive = false;
+                saveMatchResult('Player');
+                return;
+            }
+
+            // Check for a draw (board completely full)
+            if (isBoardFull()) {
+                statusElement.textContent = "It's a Draw!";
+                gameActive = false;
+                saveMatchResult('Draw');
+                return;
+            }
+
+            // Hand off to the AI
+            isAITurn = true;
+            boardElement.classList.add('ai-thinking'); // Disable cursor
+            statusElement.textContent = 'AI is thinking...';
+            statusElement.style.color = '#ffc107';
+
+            // Short delay so the player can see their move before AI responds
+            setTimeout(handleAITurn, 500);
+        }
+
+        // =============================================
+        // AI TURN
+        // =============================================
+        function handleAITurn() {
+            if (!gameActive) return;
+
+            const difficulty = difficultySelect.value;
+            const col = getAIMove(difficulty); // Ask AI to pick a column
+
+            const row = dropPiece(col, AI);
+
+            // Check if the AI just won
+            if (checkWin(row, col, AI)) {
+                statusElement.textContent = '🤖 AI Wins! Better luck next time.';
+                statusElement.style.color = '#856404';
+                gameActive = false;
+                boardElement.classList.remove('ai-thinking');
+                saveMatchResult('AI');
+                return;
+            }
+
+            // Check for a draw
+            if (isBoardFull()) {
+                statusElement.textContent = "It's a Draw!";
+                gameActive = false;
+                boardElement.classList.remove('ai-thinking');
+                saveMatchResult('Draw');
+                return;
+            }
+
+            // Give control back to the player
+            isAITurn = false;
+            boardElement.classList.remove('ai-thinking');
+            statusElement.textContent = 'Your Turn! (Red)';
+            statusElement.style.color = '#dc3545';
+        }
+
+        // =============================================
+        // AI BRAIN — The core intelligence function
+        //
+        // Priority order:
+        //   1. WIN   — if AI can win right now, do it
+        //   2. BLOCK — if player can win right now, stop them
+        //   3. SMART — pick the column closest to the center
+        //   4. RANDOM — fallback: pick any valid column
+        // =============================================
+        function getAIMove(difficulty) {
+
+            // --- EASY MODE: Just pick a random valid column ---
+            if (difficulty === 'easy') {
+                return getRandomMove();
+            }
+
+            // --- MEDIUM & HARD: Check for winning and blocking moves ---
+
+            // Priority 1: Can AI win right now?
+            for (let c = 0; c < COLS; c++) {
+                if (canDrop(c)) {
+                    // Simulate dropping a yellow piece in column c
+                    const row = simulateDrop(c, AI);
+                    if (row !== -1 && checkWin(row, c, AI)) {
+                        undoSimulate(row, c); // Clean up our test piece
+                        return c; // Take the winning move!
+                    }
+                    undoSimulate(row, c);
+                }
+            }
+
+            // Priority 2: Can the PLAYER win next turn? Block them!
+            for (let c = 0; c < COLS; c++) {
+                if (canDrop(c)) {
+                    // Simulate dropping a red piece in column c
+                    const row = simulateDrop(c, PLAYER);
+                    if (row !== -1 && checkWin(row, c, PLAYER)) {
+                        undoSimulate(row, c); // Clean up our test piece
+                        return c; // Block this column!
+                    }
+                    undoSimulate(row, c);
+                }
+            }
+
+            // Priority 3 (Hard only): Prefer center columns — stronger strategic position
+            if (difficulty === 'hard') {
+                // Column order from most central to least: 3, 2, 4, 1, 5, 0, 6
+                const preferredOrder = [3, 2, 4, 1, 5, 0, 6];
+                for (let c of preferredOrder) {
+                    if (canDrop(c)) return c;
+                }
+            }
+
+            // Priority 4: Fall back to a random valid column
+            return getRandomMove();
+        }
+
+        // Returns a random column index that isn't full
+        function getRandomMove() {
+            const validCols = [];
+            for (let c = 0; c < COLS; c++) {
+                if (canDrop(c)) validCols.push(c);
+            }
+            // Pick randomly from the valid options
+            return validCols[Math.floor(Math.random() * validCols.length)];
+        }
+
+        // Returns true if the top row of that column is empty (column not full)
+        function canDrop(col) {
+            return boardState[0][col] === null;
+        }
+
+        // Temporarily drop a piece to TEST if it would cause a win
+        // IMPORTANT: You must call undoSimulate() afterwards to remove the test piece!
+        function simulateDrop(col, color) {
+            for (let r = ROWS - 1; r >= 0; r--) {
+                if (boardState[r][col] === null) {
+                    boardState[r][col] = color; // Place test piece in memory only
+                    return r;
+                }
+            }
+            return -1;
+        }
+
+        // Remove the test piece placed by simulateDrop
+        function undoSimulate(row, col) {
+            if (row !== -1) boardState[row][col] = null;
+        }
+
+        // =============================================
+        // WIN DETECTION — Same logic as local-play.html
+        // Checks all 4 directions from the last piece dropped
+        // =============================================
+        function checkWin(row, col, color) {
+            function countDirection(dx, dy) {
+                let count = 0;
+                let r = row + dy;
+                let c = col + dx;
+                while (r >= 0 && r < ROWS && c >= 0 && c < COLS && boardState[r][c] === color) {
+                    count++;
+                    r += dy;
+                    c += dx;
+                }
+                return count;
+            }
+
+            if (countDirection(-1, 0) + countDirection(1, 0) >= 3) return true;  // Horizontal
+            if (countDirection(0, 1) >= 3) return true;                           // Vertical
+            if (countDirection(-1, 1) + countDirection(1, -1) >= 3) return true; // Diagonal /
+            if (countDirection(-1, -1) + countDirection(1, 1) >= 3) return true; // Diagonal \
+            return false;
+        }
+
+        // =============================================
+        // DRAW CHECK
+        // =============================================
+        function isBoardFull() {
+            // If every cell in the top row is taken, the board is full
+            return boardState[0].every(cell => cell !== null);
+        }
+
+        // =============================================
+        // SAVE MATCH — Logs the result to matches.json via localStorage
+        // This connects to Checkpoint #05 (Match History)
+        // =============================================
+        function saveMatchResult(winner) {
+            const matches = JSON.parse(localStorage.getItem('connect4_matches') || '[]');
+            const newMatch = {
+                id: Date.now(), // Unique ID using timestamp
+                type: 'vs-AI',
+                difficulty: difficultySelect.value,
+                winner: winner,
+                date: new Date().toLocaleDateString()
+            };
+            matches.push(newMatch);
+            localStorage.setItem('connect4_matches', JSON.stringify(matches));
+        }
+
+        // =============================================
+        // EVENT LISTENERS
+        // =============================================
+        resetBtn.addEventListener('click', initGame);
+
+        // Start the game immediately on page load
+        initGame();
+    </script>
+</body>
 </html>
