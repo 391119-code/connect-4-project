@@ -128,6 +128,7 @@
                     // Check if this move won the game
                     if (checkWin(r, col)) {
                         gameActive = false;
+                        saveMatchResult(currentPlayer === 'red' ? 'Red' : 'Yellow');
                         statusElement.textContent = `${currentPlayer.toUpperCase()} WINS!`;
                         return; // Stop the function, game is over
                     }
@@ -178,6 +179,23 @@
 
         // Start the game on page load
         initGame();
+        function saveMatchResult(winner) {
+            const matches = JSON.parse(localStorage.getItem('connect4_matches') || '[]');
+            const activeSession = sessionStorage.getItem('connect4_active_session');
+            const username = activeSession ? JSON.parse(activeSession).username : 'Guest';
+
+            const newMatch = {
+                id: Date.now(),
+                type: 'local-pvp',
+                winner: winner,
+                player1: username,
+                player2: 'Player 2 (Local)',
+                date: new Date().toLocaleDateString(),
+                timestamp: Date.now()
+            };
+            matches.push(newMatch);
+            localStorage.setItem('connect4_matches', JSON.stringify(matches));
+        }
     </script>
 </body>
 </html>
