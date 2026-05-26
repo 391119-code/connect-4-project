@@ -3,26 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connect 4 Arena - Home</title>
+    <title>Connect 4 Arena - Global Leaderboard</title>
     <style>
-        /* Temporary basic styles just to keep our navigation readable */
-        nav {
-            background-color: #333;
-            padding: 10px;
+        nav { background-color: #333; padding: 10px; }
+        nav a { color: white; margin-right: 15px; text-decoration: none; font-family: Arial, sans-serif; }
+        nav a:hover { text-decoration: underline; }
+
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 0; }
+        main { padding: 20px; max-width: 900px; margin: 0 auto; }
+
+        h1 { text-align: center; color: #333; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 30px; }
+
+        /* --- Stats Bar --- */
+        .stats-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
         }
-        nav a {
+        .stat-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px 20px;
+            text-align: center;
+            flex: 1;
+            min-width: 130px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .stat-card .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #0056b3;
+        }
+        .stat-card .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        /* --- Sort Controls --- */
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .controls label { font-weight: bold; }
+        .controls select {
+            padding: 8px 12px;
+            font-size: 14px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        /* --- Leaderboard Table --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        th {
+            background-color: #0056b3;
             color: white;
-            margin-right: 15px;
-            text-decoration: none;
-            font-family: Arial, sans-serif;
+            padding: 13px 15px;
+            text-align: left;
+            font-size: 14px;
         }
-        nav a:hover {
-            text-decoration: underline;
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
         }
-        main {
-            padding: 20px;
-            font-family: Arial, sans-serif;
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background-color: #f0f6ff; }
+
+        /* Top 3 row highlights */
+        .rank-1 td:first-child { font-weight: bold; color: #b8860b; }
+        .rank-2 td:first-child { font-weight: bold; color: #708090; }
+        .rank-3 td:first-child { font-weight: bold; color: #8b5a2b; }
+
+        .rank-medal { font-size: 18px; margin-right: 4px; }
+
+        /* Win-rate badge */
+        .winrate {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            background-color: #d4edda;
+            color: #155724;
         }
+        .winrate.mid { background-color: #fff3cd; color: #856404; }
+        .winrate.low { background-color: #f8d7da; color: #721c24; }
+
+        /* Skill badge */
+        .skill-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            background-color: #e2d9f3;
+            color: #4a235a;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #666;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .empty-state p { font-size: 18px; }
     </style>
 </head>
 <body>
@@ -40,9 +141,224 @@
     </nav>
 
     <main>
-        <h1>Welcome to the Connect 4 Web Arena!</h1>
-        <p>This is the main content placeholder. Customize this text for each page!</p>
+        <h1>🏆 Global Leaderboard</h1>
+        <p class="subtitle">Rankings are calculated from all recorded match history.</p>
+
+        <!-- Global Stats Summary -->
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-number" id="stat-players">0</div>
+                <div class="stat-label">Registered Players</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="stat-matches">0</div>
+                <div class="stat-label">Total Matches Played</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="stat-top-player">—</div>
+                <div class="stat-label">Top Player</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="stat-top-wins">0</div>
+                <div class="stat-label">Most Wins</div>
+            </div>
+        </div>
+
+        <!-- Sort Control -->
+        <div class="controls">
+            <label for="sort-by">Sort by:</label>
+            <select id="sort-by">
+                <option value="wins">Total Wins</option>
+                <option value="winrate">Win Rate %</option>
+                <option value="matches">Matches Played</option>
+            </select>
+        </div>
+
+        <!-- Leaderboard Table -->
+        <div id="table-container"></div>
     </main>
 
-    </body>
+    <script>
+        /**
+         * DATA SOURCES
+         * ─────────────────────────────────────────────────────────
+         * 1. Registered account  → localStorage key: 'connect4_db_account'
+         *    Shape: { username, skill, ... }
+         *
+         * 2. Match history       → localStorage key: 'connect4_matches'
+         *    Shape: [{ type, winner, player1, player2, ... }, ...]
+         *
+         * We build a per-player stats object by scanning every match,
+         * then sort and render the table.
+         */
+
+        function buildLeaderboard() {
+            const sortBy = document.getElementById('sort-by').value;
+
+            // ── 1. Load raw data ──────────────────────────────────
+            const matches = JSON.parse(localStorage.getItem('connect4_matches') || '[]');
+            const dbAccount = JSON.parse(localStorage.getItem('connect4_db_account') || 'null');
+
+            // ── 2. Tally stats per username ───────────────────────
+            const stats = {}; // { username: { wins, losses, draws, matches, skill } }
+
+            function ensure(name) {
+                if (!stats[name]) {
+                    stats[name] = { wins: 0, losses: 0, draws: 0, matches: 0, skill: 'Unknown' };
+                }
+            }
+
+            matches.forEach(match => {
+                const p1 = match.player1 || 'Guest';
+                const p2 = match.player2 || 'Unknown';
+
+                ensure(p1);
+                ensure(p2);
+
+                stats[p1].matches++;
+                stats[p2].matches++;
+
+                if (match.winner === 'Draw') {
+                    stats[p1].draws++;
+                    stats[p2].draws++;
+                } else if (match.type === 'vs-AI') {
+                    // For AI matches only player1 is a real user
+                    if (match.winner === 'Player') {
+                        stats[p1].wins++;
+                    } else if (match.winner === 'AI') {
+                        stats[p1].losses++;
+                    }
+                    // Don't count the AI opponent in rankings
+                    delete stats[p2];
+                    ensure(p1); // re-ensure p1 still exists
+                } else {
+                    // local-pvp: winner is 'Red' or 'Yellow'
+                    // Red = player1, Yellow = player2 by convention in local-play.html
+                    if (match.winner === 'Red') {
+                        stats[p1].wins++;
+                        stats[p2].losses++;
+                    } else if (match.winner === 'Yellow') {
+                        stats[p2].wins++;
+                        stats[p1].losses++;
+                    }
+                }
+            });
+
+            // Attach skill level from the registered account if username matches
+            if (dbAccount && stats[dbAccount.username]) {
+                stats[dbAccount.username].skill = dbAccount.skill || 'Unknown';
+            }
+
+            // Remove "AI (Easy/Medium/Hard)" entries that sneaked in
+            Object.keys(stats).forEach(name => {
+                if (name.startsWith('AI') || name === 'Unknown') delete stats[name];
+            });
+
+            // ── 3. Convert to array and sort ──────────────────────
+            let rows = Object.entries(stats).map(([username, s]) => {
+                const totalDecisive = s.wins + s.losses;
+                const winRate = totalDecisive > 0 ? Math.round((s.wins / totalDecisive) * 100) : 0;
+                return { username, ...s, winRate };
+            });
+
+            if (sortBy === 'wins') {
+                rows.sort((a, b) => b.wins - a.wins || b.winRate - a.winRate);
+            } else if (sortBy === 'winrate') {
+                rows.sort((a, b) => b.winRate - a.winRate || b.wins - a.wins);
+            } else {
+                rows.sort((a, b) => b.matches - a.matches || b.wins - a.wins);
+            }
+
+            // ── 4. Update summary stats ───────────────────────────
+            const registeredCount = dbAccount ? 1 : 0; // extend if multi-account later
+            document.getElementById('stat-players').textContent = registeredCount || rows.length;
+            document.getElementById('stat-matches').textContent = matches.length;
+
+            if (rows.length > 0) {
+                document.getElementById('stat-top-player').textContent = rows[0].username;
+                document.getElementById('stat-top-wins').textContent = rows[0].wins;
+            } else {
+                document.getElementById('stat-top-player').textContent = '—';
+                document.getElementById('stat-top-wins').textContent = '0';
+            }
+
+            // ── 5. Render table ───────────────────────────────────
+            const container = document.getElementById('table-container');
+
+            if (rows.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p>🎮 No player data yet!</p>
+                        <p>Play some games and register an account to appear here.</p>
+                    </div>`;
+                return;
+            }
+
+            const medals = ['🥇', '🥈', '🥉'];
+
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Player</th>
+                            <th>Skill</th>
+                            <th>Wins</th>
+                            <th>Losses</th>
+                            <th>Draws</th>
+                            <th>Matches</th>
+                            <th>Win Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+            rows.forEach((row, i) => {
+                const rank = i + 1;
+                const rankClass = rank <= 3 ? `rank-${rank}` : '';
+                const medal = medals[i] ? `<span class="rank-medal">${medals[i]}</span>` : '';
+
+                // Win-rate colour
+                let wrClass = 'winrate';
+                if (row.winRate < 40) wrClass += ' low';
+                else if (row.winRate < 60) wrClass += ' mid';
+
+                html += `
+                    <tr class="${rankClass}">
+                        <td>${medal}${rank}</td>
+                        <td><strong>${row.username}</strong></td>
+                        <td><span class="skill-badge">${row.skill}</span></td>
+                        <td>${row.wins}</td>
+                        <td>${row.losses}</td>
+                        <td>${row.draws}</td>
+                        <td>${row.matches}</td>
+                        <td><span class="${wrClass}">${row.winRate}%</span></td>
+                    </tr>`;
+            });
+
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        }
+
+        // Re-render when sort changes
+        document.getElementById('sort-by').addEventListener('change', buildLeaderboard);
+
+        // Seed match data on first load (same logic as match-history.html)
+        async function init() {
+            const existing = localStorage.getItem('connect4_matches');
+            if (!existing) {
+                try {
+                    const res = await fetch('matches.json');
+                    const seed = await res.json();
+                    localStorage.setItem('connect4_matches', JSON.stringify(seed));
+                } catch {
+                    localStorage.setItem('connect4_matches', JSON.stringify([]));
+                }
+            }
+            buildLeaderboard();
+        }
+
+        init();
+    </script>
+
+</body>
 </html>

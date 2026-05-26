@@ -3,8 +3,8 @@
         "id": 1,
         "type": "vs-AI",
         "winner": "Player",
-        "player1": "DemoPlayer1",
-        "player2": "AI (Medium)",
+        "userId": "u001",
+        "opponent": "AI (Medium)",
         "date": "5/20/2025",
         "timestamp": 1716235200000
     },
@@ -12,8 +12,8 @@
         "id": 2,
         "type": "local-pvp",
         "winner": "Red",
-        "player1": "DemoPlayer1",
-        "player2": "Player 2 (Local)",
+        "userId": "u001",
+        "opponent": "Player 2 (Local)",
         "date": "5/20/2025",
         "timestamp": 1716238800000
     },
@@ -21,8 +21,8 @@
         "id": 3,
         "type": "vs-AI",
         "winner": "AI",
-        "player1": "DemoPlayer1",
-        "player2": "AI (Hard)",
+        "userId": "u001",
+        "opponent": "AI (Hard)",
         "date": "5/21/2025",
         "timestamp": 1716321600000
     },
@@ -30,8 +30,8 @@
         "id": 4,
         "type": "local-pvp",
         "winner": "Yellow",
-        "player1": "DemoPlayer1",
-        "player2": "Player 2 (Local)",
+        "userId": "u001",
+        "opponent": "Player 2 (Local)",
         "date": "5/21/2025",
         "timestamp": 1716325200000
     },
@@ -39,8 +39,8 @@
         "id": 5,
         "type": "vs-AI",
         "winner": "Player",
-        "player1": "DemoPlayer1",
-        "player2": "AI (Easy)",
+        "userId": "u001",
+        "opponent": "AI (Easy)",
         "date": "5/22/2025",
         "timestamp": 1716408000000
     }
