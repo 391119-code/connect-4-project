@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connect 4 Arena - Home</title>
+    <title>Connect 4 Arena - Rules</title>
     <style>
         /* Temporary basic styles just to keep our navigation readable */
         nav {
@@ -22,6 +22,14 @@
         main {
             padding: 20px;
             font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+        .rules-container {
+            max-width: 600px;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
         }
     </style>
 </head>
@@ -40,9 +48,22 @@
     </nav>
 
     <main>
-        <h1>Welcome to the Connect 4 Web Arena!</h1>
-        <p>This is the main content placeholder. Customize this text for each page!</p>
+        <div class="rules-container">
+            <h1>How to Play Connect 4</h1>
+            <p>Welcome to the Arena! The rules are simple, but mastering the game takes strategy.</p>
+            
+            <h3>Objective</h3>
+            <p>Be the first player to connect 4 of your colored discs in a row (either vertically, horizontally, or diagonally).</p>
+            
+            <h3>Gameplay</h3>
+            <ol>
+                <li>The game is played on a grid that is 7 columns wide and 6 rows high.</li>
+                <li>Players take turns dropping one of their discs into any of the 7 columns.</li>
+                <li>The disc will fall straight down, occupying the lowest available space within the column.</li>
+                <li>The game ends when a player successfully connects 4 discs, or when the board is completely full (resulting in a tie).</li>
+            </ol>
+        </div>
     </main>
 
-    </body>
+</body>
 </html>

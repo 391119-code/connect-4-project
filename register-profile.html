@@ -5,31 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connect 4 Arena - Profile & Auth</title>
     <style>
-        /* Navigation Styles */
-        nav {
-            background-color: #333;
-            padding: 10px;
-        }
-        nav a {
-            color: white;
-            margin-right: 15px;
-            text-decoration: none;
-            font-family: Arial, sans-serif;
-        }
-        nav a:hover {
-            text-decoration: underline;
-        }
-        
-        /* Main Layout Styles */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 0;
-        }
-        main {
-            padding: 20px;
-        }
+        nav { background-color: #333; padding: 10px; }
+        nav a { color: white; margin-right: 15px; text-decoration: none; font-family: Arial, sans-serif; }
+        nav a:hover { text-decoration: underline; }
+
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 0; }
+        main { padding: 20px; }
+
         .container {
             max-width: 600px;
             margin: 0 auto;
@@ -39,19 +21,10 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
-        /* Form Styles */
-        h2 {
-            text-align: center;
-            color: #333;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
+        h2 { text-align: center; color: #333; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
         .form-group input[type="text"],
         .form-group input[type="password"],
         .form-group input[type="email"],
@@ -63,10 +36,9 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
-        .radio-group {
-            display: flex;
-            gap: 15px;
-        }
+
+        .radio-group { display: flex; gap: 15px; }
+
         button {
             width: 100%;
             padding: 12px;
@@ -78,24 +50,13 @@
             font-size: 16px;
             margin-top: 10px;
         }
-        button:hover {
-            background-color: #004494;
-        }
-        .btn-danger {
-            background-color: #dc3545;
-        }
-        .btn-danger:hover {
-            background-color: #c82333;
-        }
-        .btn-secondary {
-            background-color: #6c757d;
-            margin-top: 10px;
-        }
-        .btn-secondary:hover {
-            background-color: #5a6268;
-        }
-        
-        /* Profile Display Styles */
+        button:hover { background-color: #004494; }
+        .btn-danger { background-color: #dc3545; }
+        .btn-danger:hover { background-color: #c82333; }
+        .btn-secondary { background-color: #6c757d; }
+        .btn-secondary:hover { background-color: #5a6268; }
+
+        /* Profile display */
         .profile-header {
             display: flex;
             align-items: center;
@@ -110,26 +71,26 @@
             border-radius: 50%;
             object-fit: cover;
             border: 3px solid #333;
-            background-color: black; /* Failsafe background */
+            background-color: black;
         }
-        .profile-details p {
-            margin: 8px 0;
-            line-height: 1.5;
-        }
-        
-        /* Utility */
-        .hidden {
+        .profile-details p { margin: 8px 0; line-height: 1.5; }
+
+        /* Success flash */
+        #save-notice {
             display: none;
-        }
-        .toggle-link {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
             text-align: center;
-            margin-top: 15px;
+            font-weight: bold;
         }
-        .toggle-link a {
-            color: #0056b3;
-            cursor: pointer;
-            text-decoration: underline;
-        }
+
+        .hidden { display: none; }
+        .toggle-link { text-align: center; margin-top: 15px; }
+        .toggle-link a { color: #0056b3; cursor: pointer; text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -148,17 +109,18 @@
 
     <main>
         <div class="container">
-            
+
+            <!-- ── LOGIN ── -->
             <div id="login-section" class="hidden">
                 <h2>Player Login</h2>
                 <form id="login-form">
                     <div class="form-group">
                         <label for="login-username">Username:</label>
-                        <input type="text" id="login-username" value="DemoPlayer1" required>
+                        <input type="text" id="login-username" required>
                     </div>
                     <div class="form-group">
                         <label for="login-password">Password:</label>
-                        <input type="password" id="login-password" value="DemoPass123!" required>
+                        <input type="password" id="login-password" required>
                     </div>
                     <button type="submit">Log In</button>
                 </form>
@@ -167,41 +129,45 @@
                 </div>
             </div>
 
+            <!-- ── REGISTER / EDIT ── -->
             <div id="register-section">
                 <h2 id="form-header">Create Your Player Profile</h2>
                 <form id="register-form">
+
                     <div class="form-group">
                         <label for="reg-username">1. Username:</label>
-                        <input type="text" id="reg-username" value="DemoPlayer1" required>
+                        <input type="text" id="reg-username" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="reg-password">2. Password:</label>
-                        <input type="password" id="reg-password" value="DemoPass123!" required>
+                        <input type="password" id="reg-password" required>
                     </div>
 
                     <div class="form-group">
                         <label for="reg-email">3. Email Address:</label>
-                        <input type="email" id="reg-email" value="demo@connect4arena.com" required>
+                        <input type="email" id="reg-email" required>
                     </div>
 
                     <div class="form-group">
                         <label for="reg-pic">4. Profile Picture (Optional):</label>
                         <input type="file" id="reg-pic" accept="image/*">
-                        <small style="display:block; margin-top:5px; color:#666;" id="pic-note">Leave blank to keep current picture when editing.</small>
+                        <small style="display:block;margin-top:5px;color:#666;" id="pic-note">
+                            Leave blank to keep your current picture when editing.
+                        </small>
                     </div>
 
                     <div class="form-group">
                         <label>5. Favorite Piece Color:</label>
                         <div class="radio-group">
-                            <label><input type="radio" name="fav-color" value="Red" id="color-red" checked> Red</label>
+                            <label><input type="radio" name="fav-color" value="Red"    id="color-red"    checked> Red</label>
                             <label><input type="radio" name="fav-color" value="Yellow" id="color-yellow"> Yellow</label>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="reg-bio">6. Player Bio:</label>
-                        <textarea id="reg-bio" rows="3">I'm here to drop tokens and win games!</textarea>
+                        <textarea id="reg-bio" rows="3"></textarea>
                     </div>
 
                     <div class="form-group">
@@ -225,25 +191,27 @@
 
                     <div class="form-group">
                         <label for="reg-phrase">9. Victory Catchphrase:</label>
-                        <input type="text" id="reg-phrase" value="Four in a row, let's go!">
+                        <input type="text" id="reg-phrase">
                     </div>
 
                     <button type="submit" id="submit-btn">Complete Registration</button>
                     <button type="button" id="cancel-edit-btn" class="btn-danger hidden">Cancel</button>
+                    <div id="save-notice">✅ Profile saved successfully!</div>
                 </form>
                 <div class="toggle-link" id="register-toggle-text">
                     Already have an account? <a id="show-login">Log in here</a>
                 </div>
             </div>
 
+            <!-- ── PROFILE VIEW ── -->
             <div id="profile-section" class="hidden">
                 <h2>Arena Dossier</h2>
-                
+
                 <div class="profile-header">
                     <img id="display-pic" class="profile-pic-display" src="" alt="Profile Picture">
                     <div>
-                        <h3 id="display-username" style="margin: 0; font-size: 24px;"></h3>
-                        <p id="display-phrase" style="font-style: italic; color: #666; margin-top: 5px;"></p>
+                        <h3 id="display-username" style="margin:0;font-size:24px;"></h3>
+                        <p id="display-phrase" style="font-style:italic;color:#666;margin-top:5px;"></p>
                     </div>
                 </div>
 
@@ -252,7 +220,7 @@
                     <p><strong>Favorite Color:</strong> <span id="display-color"></span></p>
                     <p><strong>Skill Level:</strong> <span id="display-skill"></span></p>
                     <p><strong>Favorite Mode:</strong> <span id="display-mode"></span></p>
-                    <p><strong>Bio:</strong> <br><span id="display-bio"></span></p>
+                    <p><strong>Bio:</strong><br><span id="display-bio"></span></p>
                 </div>
 
                 <button id="edit-btn" class="btn-secondary">Edit Profile</button>
@@ -263,142 +231,137 @@
     </main>
 
     <script>
-        // DOM Elements
-        const loginSection = document.getElementById('login-section');
+        // ── DOM refs ──────────────────────────────────────────────────
+        const loginSection    = document.getElementById('login-section');
         const registerSection = document.getElementById('register-section');
-        const profileSection = document.getElementById('profile-section');
-        
-        const loginForm = document.getElementById('login-form');
-        const registerForm = document.getElementById('register-form');
-        const logoutBtn = document.getElementById('logout-btn');
-        const editBtn = document.getElementById('edit-btn');
-        const cancelEditBtn = document.getElementById('cancel-edit-btn');
-        
-        const showLoginBtn = document.getElementById('show-login');
-        const showRegisterBtn = document.getElementById('show-register');
+        const profileSection  = document.getElementById('profile-section');
 
-        // Toggle Views between Login and Register
-        showLoginBtn.addEventListener('click', () => {
-            resetFormToRegisterMode();
+        const loginForm    = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const logoutBtn    = document.getElementById('logout-btn');
+        const editBtn      = document.getElementById('edit-btn');
+        const cancelEditBtn = document.getElementById('cancel-edit-btn');
+        const saveNotice   = document.getElementById('save-notice');
+
+        document.getElementById('show-login').addEventListener('click', () => {
+            resetToRegisterMode();
             registerSection.classList.add('hidden');
             loginSection.classList.remove('hidden');
         });
-
-        showRegisterBtn.addEventListener('click', () => {
-            resetFormToRegisterMode();
+        document.getElementById('show-register').addEventListener('click', () => {
+            resetToRegisterMode();
             loginSection.classList.add('hidden');
             registerSection.classList.remove('hidden');
         });
 
-        // State Management - Uses sessionStorage to stay logged in until tab closes
+        // ── Show correct view based on session ────────────────────────
         function checkLoginState() {
-            // sessionStorage clears when the tab closes. localStorage does not.
-            const activeSession = sessionStorage.getItem('connect4_active_session');
-            
-            if (activeSession) {
-                // User is actively logged in, show profile
-                const user = JSON.parse(activeSession);
-                
-                document.getElementById('display-username').textContent = user.username;
-                document.getElementById('display-email').textContent = user.email;
-                document.getElementById('display-color').textContent = user.color;
-                document.getElementById('display-bio').textContent = user.bio || "No bio provided.";
-                document.getElementById('display-skill').textContent = user.skill;
-                document.getElementById('display-mode').textContent = user.mode;
-                document.getElementById('display-phrase').textContent = `"${user.phrase || "I let my checkers do the talking."}"`;
-                
-                // Load image or a solid black square SVG as a fallback
-                document.getElementById('display-pic').src = user.profilePic || "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='black'/%3E%3C/svg%3E";
-                
-                // Hide Auth, Show Profile
-                loginSection.classList.add('hidden');
-                registerSection.classList.add('hidden');
-                profileSection.classList.remove('hidden');
+            const session = sessionStorage.getItem('connect4_active_session');
+            if (session) {
+                const user = JSON.parse(session);
+                renderProfile(user);
             } else {
-                // Show Login by default if logged out
                 profileSection.classList.add('hidden');
                 registerSection.classList.add('hidden');
                 loginSection.classList.remove('hidden');
             }
         }
 
-        // --- EDIT PROFILE LOGIC ---
+        // ── Render the profile display panel ─────────────────────────
+        function renderProfile(user) {
+            document.getElementById('display-username').textContent = user.username || '';
+            document.getElementById('display-email').textContent    = user.email    || '';
+            document.getElementById('display-color').textContent    = user.color    || '';
+            document.getElementById('display-skill').textContent    = user.skill    || '';
+            document.getElementById('display-mode').textContent     = user.mode     || '';
+            document.getElementById('display-bio').textContent      = user.bio      || 'No bio provided.';
+            document.getElementById('display-phrase').textContent   = user.phrase
+                ? `"${user.phrase}"`
+                : '"I let my checkers do the talking."';
+
+            // Profile picture: use saved base64, or a plain black square fallback
+            document.getElementById('display-pic').src = user.profilePic ||
+                "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='%23333'/%3E%3C/svg%3E";
+
+            loginSection.classList.add('hidden');
+            registerSection.classList.add('hidden');
+            profileSection.classList.remove('hidden');
+        }
+
+        // ── Edit button — pre-fill form with current data ─────────────
         editBtn.addEventListener('click', () => {
             const user = JSON.parse(sessionStorage.getItem('connect4_active_session'));
-            
-            // Populate form with current data
-            document.getElementById('reg-username').value = user.username;
-            document.getElementById('reg-password').value = user.password;
-            document.getElementById('reg-email').value = user.email;
-            document.getElementById('reg-bio').value = user.bio;
-            document.getElementById('reg-skill').value = user.skill;
-            document.getElementById('reg-mode').value = user.mode;
-            document.getElementById('reg-phrase').value = user.phrase;
-            
-            if (user.color === "Red") {
-                document.getElementById('color-red').checked = true;
-            } else {
-                document.getElementById('color-yellow').checked = true;
-            }
 
-            // Change form appearance for Editing
-            document.getElementById('form-header').textContent = "Update Your Profile";
-            document.getElementById('submit-btn').textContent = "Save Changes";
+            document.getElementById('reg-username').value = user.username || '';
+            document.getElementById('reg-password').value = user.password || '';
+            document.getElementById('reg-email').value    = user.email    || '';
+            document.getElementById('reg-bio').value      = user.bio      || '';
+            document.getElementById('reg-skill').value    = user.skill    || 'Intermediate';
+            document.getElementById('reg-mode').value     = user.mode     || 'Local Couch Co-op';
+            document.getElementById('reg-phrase').value   = user.phrase   || '';
+
+            document.getElementById(user.color === 'Yellow' ? 'color-yellow' : 'color-red').checked = true;
+
+            // Switch form labels to "edit" mode
+            document.getElementById('form-header').textContent = 'Update Your Profile';
+            document.getElementById('submit-btn').textContent  = 'Save Changes';
             document.getElementById('register-toggle-text').classList.add('hidden');
             cancelEditBtn.classList.remove('hidden');
-            
+
             profileSection.classList.add('hidden');
             registerSection.classList.remove('hidden');
         });
 
         cancelEditBtn.addEventListener('click', () => {
-            resetFormToRegisterMode();
+            resetToRegisterMode();
             checkLoginState();
         });
 
-        function resetFormToRegisterMode() {
-            document.getElementById('form-header').textContent = "Create Your Player Profile";
-            document.getElementById('submit-btn').textContent = "Complete Registration";
+        function resetToRegisterMode() {
+            document.getElementById('form-header').textContent = 'Create Your Player Profile';
+            document.getElementById('submit-btn').textContent  = 'Complete Registration';
             document.getElementById('register-toggle-text').classList.remove('hidden');
             cancelEditBtn.classList.add('hidden');
-            // We don't clear values here so your demo autofill remains intact!
+            saveNotice.style.display = 'none';
+            registerForm.reset();
         }
 
-        // --- REGISTRATION & UPDATE SUBMIT ---
-        registerForm.addEventListener('submit', function(e) {
+        // ── Registration / Update submit ──────────────────────────────
+        registerForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            
-            const fileInput = document.getElementById('reg-pic');
+
+            // Get selected color radio
             const colorRadios = document.getElementsByName('fav-color');
-            let selectedColor = "Red";
-            for (let radio of colorRadios) {
-                if (radio.checked) selectedColor = radio.value;
+            let selectedColor = 'Red';
+            for (const r of colorRadios) {
+                if (r.checked) { selectedColor = r.value; break; }
             }
 
-            // Check if there is an existing picture we should keep
+            // Keep existing profile pic if no new file chosen
             let existingPic = null;
             const currentSession = sessionStorage.getItem('connect4_active_session');
             if (currentSession) {
-                existingPic = JSON.parse(currentSession).profilePic;
+                existingPic = JSON.parse(currentSession).profilePic || null;
             }
 
+            // Build the full user object — ALL 9 fields always saved
             const userData = {
-                username: document.getElementById('reg-username').value,
-                password: document.getElementById('reg-password').value,
-                email: document.getElementById('reg-email').value,
-                color: selectedColor,
-                bio: document.getElementById('reg-bio').value,
-                skill: document.getElementById('reg-skill').value,
-                mode: document.getElementById('reg-mode').value,
-                phrase: document.getElementById('reg-phrase').value,
-                profilePic: existingPic // Default to existing if updating
+                username:   document.getElementById('reg-username').value.trim(),
+                password:   document.getElementById('reg-password').value,
+                email:      document.getElementById('reg-email').value.trim(),
+                color:      selectedColor,
+                bio:        document.getElementById('reg-bio').value.trim(),
+                skill:      document.getElementById('reg-skill').value,
+                mode:       document.getElementById('reg-mode').value,
+                phrase:     document.getElementById('reg-phrase').value.trim(),
+                profilePic: existingPic
             };
 
-            // Handle Image Upload reading
+            const fileInput = document.getElementById('reg-pic');
             if (fileInput.files && fileInput.files[0]) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    userData.profilePic = event.target.result; // Base64 string
+                reader.onload = function (event) {
+                    userData.profilePic = event.target.result;
                     saveAndLogin(userData);
                 };
                 reader.readAsDataURL(fileInput.files[0]);
@@ -407,50 +370,52 @@
             }
         });
 
-        // Helper to save user and update UI
+        // ── Save to both localStorage (permanent) and sessionStorage (session) ──
         function saveAndLogin(userData) {
-            // Save to mock "Database" (localStorage - persists forever)
+            // "Database" — survives forever across browser restarts
             localStorage.setItem('connect4_db_account', JSON.stringify(userData));
-            
-            // Save to active session (sessionStorage - clears when tab closes)
+
+            // Active session — survives until tab/browser closes
             sessionStorage.setItem('connect4_active_session', JSON.stringify(userData));
-            
-            resetFormToRegisterMode();
-            checkLoginState();
+
+            // Show success notice briefly before switching to profile view
+            saveNotice.style.display = 'block';
+            setTimeout(() => {
+                saveNotice.style.display = 'none';
+                resetToRegisterMode();
+                checkLoginState();
+            }, 1200);
         }
 
-        // --- LOGIN LOGIC ---
-        loginForm.addEventListener('submit', function(e) {
+        // ── Login submit ──────────────────────────────────────────────
+        loginForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            const inputUser = document.getElementById('login-username').value;
+
+            const inputUser = document.getElementById('login-username').value.trim();
             const inputPass = document.getElementById('login-password').value;
-            
-            // Look up the account in the mock Database
-            const dbAccountStr = localStorage.getItem('connect4_db_account');
-            
-            if (dbAccountStr) {
-                const dbAccount = JSON.parse(dbAccountStr);
-                // Verify credentials
-                if (inputUser === dbAccount.username && inputPass === dbAccount.password) {
-                    // Success! Start a new active session
-                    sessionStorage.setItem('connect4_active_session', JSON.stringify(dbAccount));
-                    checkLoginState();
-                } else {
-                    alert("Incorrect username or password!");
-                }
+
+            const dbStr = localStorage.getItem('connect4_db_account');
+            if (!dbStr) {
+                alert('No account found! Please register first.');
+                return;
+            }
+
+            const db = JSON.parse(dbStr);
+            if (inputUser === db.username && inputPass === db.password) {
+                sessionStorage.setItem('connect4_active_session', JSON.stringify(db));
+                checkLoginState();
             } else {
-                alert("No account found! Please register first.");
+                alert('Incorrect username or password!');
             }
         });
 
-        // --- LOGOUT LOGIC ---
-        logoutBtn.addEventListener('click', function() {
-            // Clear only the active session. The account stays in localStorage Database.
+        // ── Logout ────────────────────────────────────────────────────
+        logoutBtn.addEventListener('click', function () {
             sessionStorage.removeItem('connect4_active_session');
             checkLoginState();
         });
 
-        // Initialize Page
+        // ── Init ──────────────────────────────────────────────────────
         checkLoginState();
     </script>
 

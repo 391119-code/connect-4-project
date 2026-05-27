@@ -5,19 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connect 4 Arena - Local Play</title>
     <style>
-        /* Keep your existing Nav styles here */
         nav { background-color: #333; padding: 10px; }
         nav a { color: white; margin-right: 15px; text-decoration: none; font-family: Arial, sans-serif; }
         nav a:hover { text-decoration: underline; }
         body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 0; }
         main { padding: 20px; display: flex; flex-direction: column; align-items: center; }
 
-        /* Game Board Styles */
         #game-status {
             font-size: 24px;
             font-weight: bold;
             margin-bottom: 20px;
         }
+
+        #player-names {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        .player-label {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        .player-label.red-label  { background: #f8d7da; color: #721c24; border: 2px solid #dc3545; }
+        .player-label.yellow-label { background: #fff3cd; color: #856404; border: 2px solid #ffc107; }
 
         #board {
             display: grid;
@@ -34,20 +46,25 @@
             width: 60px;
             height: 60px;
             background-color: white;
-            border-radius: 50%; /* Makes the slots circular */
+            border-radius: 50%;
             cursor: pointer;
             box-shadow: inset 0 3px 5px rgba(0,0,0,0.2);
         }
 
-        .cell.red { background-color: #dc3545; }
+        .cell.red    { background-color: #dc3545; }
         .cell.yellow { background-color: #ffc107; }
-        
+
         button {
             margin-top: 20px;
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 5px;
         }
+        button:hover { background-color: #004494; }
     </style>
 </head>
 <body>
@@ -66,44 +83,69 @@
 
     <main>
         <h1>Local Couch Co-op</h1>
+
+        <div id="player-names">
+            <span class="player-label red-label"    id="label-p1">Player 1 (Red)</span>
+            <span class="player-label yellow-label" id="label-p2">Player 2 (Yellow)</span>
+        </div>
+
         <div id="game-status">Red's Turn!</div>
         <div id="board"></div>
         <button id="reset-btn">Reset Game</button>
     </main>
 
     <script>
-        // Game Constants & State
+        // ── Constants & State ───────────────────────────────────────
         const ROWS = 6;
         const COLS = 7;
-        let boardState = []; // This will be our 2D array (in memory)
-        let currentPlayer = 'red'; // 'red' goes first
-        let gameActive = true;
+        let boardState  = [];
+        let currentPlayer = 'red';
+        let gameActive    = true;
 
-        const boardElement = document.getElementById('board');
+        // ── Read logged-in username from sessionStorage ─────────────
+        function getLoggedInUsername() {
+            const session = sessionStorage.getItem('connect4_active_session');
+            return session ? JSON.parse(session).username : null;
+        }
+
+        // Player 1 = logged-in user (if any), otherwise "Player 1"
+        // Player 2 = always "Player 2 (Local)" for local co-op
+        function getPlayerNames() {
+            const username = getLoggedInUsername();
+            const p1 = username || 'Player 1';
+            const p2 = 'Player 2 (Local)';
+            return { p1, p2 };
+        }
+
+        // ── DOM refs ────────────────────────────────────────────────
+        const boardElement  = document.getElementById('board');
         const statusElement = document.getElementById('game-status');
-        const resetBtn = document.getElementById('reset-btn');
+        const resetBtn      = document.getElementById('reset-btn');
+        const labelP1       = document.getElementById('label-p1');
+        const labelP2       = document.getElementById('label-p2');
 
-        // 1. Initialize the board structure
+        // ── Init ────────────────────────────────────────────────────
         function initGame() {
-            boardState = [];
+            boardState    = [];
             boardElement.innerHTML = '';
             currentPlayer = 'red';
-            gameActive = true;
-            statusElement.textContent = "Red's Turn!";
-            statusElement.style.color = '#dc3545';
+            gameActive    = true;
+
+            const { p1, p2 } = getPlayerNames();
+            labelP1.textContent = `${p1} (Red)`;
+            labelP2.textContent = `${p2} (Yellow)`;
+
+            statusElement.textContent  = `${p1}'s Turn! (Red)`;
+            statusElement.style.color  = '#dc3545';
 
             for (let r = 0; r < ROWS; r++) {
                 let row = [];
                 for (let c = 0; c < COLS; c++) {
-                    row.push(null); // null means empty slot
-
-                    // Create the physical HTML element for the UI
+                    row.push(null);
                     const cell = document.createElement('div');
                     cell.classList.add('cell');
                     cell.dataset.row = r;
                     cell.dataset.col = c;
-                    
-                    // Listen for clicks on columns
                     cell.addEventListener('click', () => handleDrop(c));
                     boardElement.appendChild(cell);
                 }
@@ -111,91 +153,84 @@
             }
         }
 
-        // 2. Handle dropping a piece (Gravity)
+        // ── Drop piece ──────────────────────────────────────────────
         function handleDrop(col) {
             if (!gameActive) return;
 
-            // Loop backwards (from bottom row up) to find the first empty slot
             for (let r = ROWS - 1; r >= 0; r--) {
                 if (boardState[r][col] === null) {
-                    // Update our JS array memory
                     boardState[r][col] = currentPlayer;
-                    
-                    // Update the HTML UI
-                    const cell = document.querySelector(`.cell[data-row="${r}"][data-col="${col}"]`);
-                    cell.classList.add(currentPlayer);
 
-                    // Check if this move won the game
+                    const allCells = boardElement.querySelectorAll('.cell');
+                    allCells[r * COLS + col].classList.add(currentPlayer);
+
                     if (checkWin(r, col)) {
                         gameActive = false;
-                        saveMatchResult(currentPlayer === 'red' ? 'Red' : 'Yellow');
-                        statusElement.textContent = `${currentPlayer.toUpperCase()} WINS!`;
-                        return; // Stop the function, game is over
+                        const winner = currentPlayer === 'red' ? 'Red' : 'Yellow';
+                        const { p1, p2 } = getPlayerNames();
+                        const winnerName = currentPlayer === 'red' ? p1 : p2;
+                        statusElement.textContent = `🎉 ${winnerName} Wins!`;
+                        statusElement.style.color  = currentPlayer === 'red' ? '#dc3545' : '#856404';
+                        saveMatchResult(winner);
+                        return;
                     }
 
-                    // Switch turns
+                    // Check draw
+                    if (boardState[0].every(cell => cell !== null)) {
+                        gameActive = false;
+                        statusElement.textContent = "It's a Draw!";
+                        saveMatchResult('Draw');
+                        return;
+                    }
+
                     currentPlayer = currentPlayer === 'red' ? 'yellow' : 'red';
-                    statusElement.textContent = currentPlayer === 'red' ? "Red's Turn!" : "Yellow's Turn!";
-                    statusElement.style.color = currentPlayer === 'red' ? '#dc3545' : '#ffc107';
-                    return; // Break the loop once we drop the piece
+
+                    const { p1, p2 } = getPlayerNames();
+                    const nextName = currentPlayer === 'red' ? p1 : p2;
+                    const nextColor = currentPlayer === 'red' ? 'Red' : 'Yellow';
+                    statusElement.textContent = `${nextName}'s Turn! (${nextColor})`;
+                    statusElement.style.color  = currentPlayer === 'red' ? '#dc3545' : '#ffc107';
+                    return;
                 }
             }
         }
 
-        // 3. Win Detection Logic
+        // ── Win detection ────────────────────────────────────────────
         function checkWin(row, col) {
-            // Helper function to count matching pieces in a specific direction (dx, dy)
-            function countDirection(dx, dy) {
-                let count = 0;
-                let r = row + dy;
-                let c = col + dx;
-
-                // Keep moving in the direction as long as it's the same color
+            function countDir(dx, dy) {
+                let count = 0, r = row + dy, c = col + dx;
                 while (r >= 0 && r < ROWS && c >= 0 && c < COLS && boardState[r][c] === currentPlayer) {
-                    count++;
-                    r += dy;
-                    c += dx;
+                    count++; r += dy; c += dx;
                 }
                 return count;
             }
-
-            // We check both sides of the piece we just dropped to total it up.
-            // A total of 3 + the piece we just dropped = 4 in a row.
-            
-            // Horizontal check (left and right)
-            if (countDirection(-1, 0) + countDirection(1, 0) >= 3) return true;
-            // Vertical check (down only, since pieces drop)
-            if (countDirection(0, 1) >= 3) return true;
-            // Diagonal / (down-left and up-right)
-            if (countDirection(-1, 1) + countDirection(1, -1) >= 3) return true;
-            // Diagonal \ (up-left and down-right)
-            if (countDirection(-1, -1) + countDirection(1, 1) >= 3) return true;
-
+            if (countDir(-1, 0) + countDir(1, 0) >= 3) return true;
+            if (countDir(0, 1) >= 3) return true;
+            if (countDir(-1, 1) + countDir(1, -1) >= 3) return true;
+            if (countDir(-1, -1) + countDir(1, 1) >= 3) return true;
             return false;
         }
 
-        // Reset the game when button is clicked
-        resetBtn.addEventListener('click', initGame);
-
-        // Start the game on page load
-        initGame();
+        // ── Save match to localStorage ───────────────────────────────
         function saveMatchResult(winner) {
             const matches = JSON.parse(localStorage.getItem('connect4_matches') || '[]');
-            const activeSession = sessionStorage.getItem('connect4_active_session');
-            const username = activeSession ? JSON.parse(activeSession).username : 'Guest';
+            const { p1, p2 } = getPlayerNames();
 
             const newMatch = {
-                id: Date.now(),
-                type: 'local-pvp',
-                winner: winner,
-                player1: username,
-                player2: 'Player 2 (Local)',
-                date: new Date().toLocaleDateString(),
+                id:        Date.now(),
+                type:      'local-pvp',
+                winner:    winner,
+                player1:   p1,
+                player2:   p2,
+                date:      new Date().toLocaleDateString(),
                 timestamp: Date.now()
             };
             matches.push(newMatch);
             localStorage.setItem('connect4_matches', JSON.stringify(matches));
         }
+
+        resetBtn.addEventListener('click', initGame);
+        initGame();
     </script>
 </body>
 </html>
