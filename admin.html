@@ -187,6 +187,14 @@
             </div>
         </div>
 
+        <div class="table-container" style="margin-bottom: 30px;">
+            <h2>⚙️ Global Site Settings</h2>
+            <label for="motd-input"><strong>Message of the Day:</strong></label>
+            <input type="text" id="motd-input" placeholder="Enter new message here..." style="width: 70%; padding: 8px;">
+            <button onclick="updateMOTD()" style="padding: 9px 15px; background: #28a745; color: white; border: none; cursor: pointer;">Update Message</button>
+            <p id="motd-success" style="color: green; display: none; font-size: 14px; margin-top: 10px;">Message updated successfully!</p>
+        </div>
+
         <div class="data-section">
             <div class="table-container">
                 <h2>🏆 Top System Players</h2>
@@ -237,29 +245,30 @@
             }
         }
 
-        // Use 'async' because fetching files takes a split second
+        // Updated JavaScript for loading data
         async function loadDashboardData() {
             try {
-                // 1. Check the "Memory Card" (localStorage) first
-                let users = JSON.parse(localStorage.getItem('live_users'));
-                let matches = JSON.parse(localStorage.getItem('live_matches'));
+                // 1. Use the EXACT SAME keys as your leaderboard!
+                let users = JSON.parse(localStorage.getItem('connect4_users'));
+                let matches = JSON.parse(localStorage.getItem('connect4_matches'));
 
-                // 2. If memory is empty, fetch the "Starter Pack" JSON files and save them
-                if (!users || !matches) {
+                // 2. Fetch starter JSON if memory is empty
+                if (!users) {
                     const usersResponse = await fetch('users.json');
                     users = await usersResponse.json();
-                    localStorage.setItem('live_users', JSON.stringify(users));
-
+                    localStorage.setItem('connect4_users', JSON.stringify(users));
+                }
+                if (!matches) {
                     const matchesResponse = await fetch('matches.json');
                     matches = await matchesResponse.json();
-                    localStorage.setItem('live_matches', JSON.stringify(matches));
+                    localStorage.setItem('connect4_matches', JSON.stringify(matches));
                 }
 
-                // 3. Populate the Top Widget Stats using the live data
-                document.getElementById('stat-total-users').innerText = users.length;
-                document.getElementById('stat-total-matches').innerText = matches.length;
+                // 3. Populate Top Widget Stats
+                document.getElementById('stat-total-users').innerText = users.length || 0;
+                document.getElementById('stat-total-matches').innerText = matches.length || 0;
 
-                // Calculate the AI Win Ratio based on live matches
+                // Calculate AI Win Ratio
                 const aiMatches = matches.filter(m => m.type === "vs-AI");
                 if (aiMatches.length > 0) {
                     const aiWins = aiMatches.filter(m => m.winner === "AI").length;
@@ -271,9 +280,8 @@
                 const topPlayersTable = document.getElementById('top-players-table');
                 topPlayersTable.innerHTML = "";
                 
-                // Sort users by wins (highest first) and grab the top 5
+                // Sort users by wins
                 const sortedUsers = [...users].sort((a, b) => b.wins - a.wins).slice(0, 5);
-                
                 sortedUsers.forEach((user, index) => {
                     topPlayersTable.innerHTML += `<tr>
                         <td><strong>#${index + 1}</strong></td>
@@ -287,25 +295,45 @@
                 const recentMatchesTable = document.getElementById('recent-matches-table');
                 recentMatchesTable.innerHTML = "";
 
-                // Reverse matches to show newest first, grab the latest 5
                 const latestMatches = [...matches].reverse().slice(0, 5);
-                
                 latestMatches.forEach(match => {
+                    // Find user or default to "Guest"
                     const player = users.find(u => u.id === match.userId);
-                    const playerName = player ? player.username : "Unknown Player";
+                    const playerName = player ? player.username : (match.player1 || "Guest");
 
                     recentMatchesTable.innerHTML += `<tr>
-                        <td>${match.id}</td>
-                        <td>${playerName} vs. ${match.opponent}</td>
+                        <td>${match.id || '-'}</td>
+                        <td>${playerName} vs. ${match.opponent || match.player2}</td>
                         <td><span style="color: #28a745; font-weight:bold;">${match.winner}</span></td>
-                        <td>${match.date}</td>
+                        <td>${match.date || 'Recent'}</td>
                     </tr>`;
                 });
 
+                // 6. Load current MOTD into the input box
+                let settings = JSON.parse(localStorage.getItem('connect4_settings'));
+                if (!settings) {
+                    const settingsRes = await fetch('settings.json');
+                    settings = await settingsRes.json();
+                    localStorage.setItem('connect4_settings', JSON.stringify(settings));
+                }
+                document.getElementById('motd-input').value = settings.messageOfTheDay || "";
+
             } catch (error) {
-                console.error("Error loading JSON:", error);
-                alert("Could not load JSON files. Make sure you are using VS Code Live Server!");
+                console.error("Error loading Dashboard:", error);
             }
+        }
+
+        // Function to handle Checkpoint #08 Global Update
+        function updateMOTD() {
+            const newMessage = document.getElementById('motd-input').value;
+            let settings = JSON.parse(localStorage.getItem('connect4_settings')) || {};
+            
+            settings.messageOfTheDay = newMessage;
+            localStorage.setItem('connect4_settings', JSON.stringify(settings));
+            
+            const successMsg = document.getElementById('motd-success');
+            successMsg.style.display = 'block';
+            setTimeout(() => { successMsg.style.display = 'none'; }, 3000);
         }
     </script>
 </body>

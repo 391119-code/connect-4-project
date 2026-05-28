@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connect 4 Arena - Home</title>
     <style>
-        /* Temporary basic styles just to keep our navigation readable */
+        /* Existing Top Navigation Styles */
         nav {
             background-color: #333;
             padding: 10px;
@@ -19,9 +19,72 @@
         nav a:hover {
             text-decoration: underline;
         }
-        main {
-            padding: 20px;
+
+        /* --- NEW UI POLISH STYLES --- */
+        
+        /* 1. Resetting the body for a cleaner look */
+        body {
+            margin: 0;
+            background-color: #f8f9fa; /* A soft light gray instead of harsh white */
             font-family: Arial, sans-serif;
+        }
+
+        /* 2. Centering the main content */
+        main {
+            padding: 60px 20px;
+            text-align: center; 
+        }
+
+        h1 {
+            color: #2c3e50; /* A darker, professional slate blue */
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+        }
+
+        /* 3. Flexbox container to align buttons perfectly */
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px; /* Adds space between the buttons */
+            flex-wrap: wrap; /* Ensures they stack nicely on smaller screens */
+        }
+
+        /* 4. Base styles for all big buttons */
+        .action-btn {
+            display: inline-block;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+            border-radius: 8px; /* Smooth rounded corners */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Adds a subtle 3D shadow */
+            transition: background-color 0.3s, transform 0.2s; /* Animates the hover effect */
+        }
+
+        /* 5. Unique colors for each button (Connect 4 Theme) */
+        .btn-play { background-color: #e74c3c; } /* Connect 4 Red */
+        .btn-play:hover { 
+            background-color: #c0392b; 
+            transform: translateY(-3px); /* Makes the button "lift" up on hover */
+        }
+
+        .btn-leaderboard { background-color: #3498db; } /* Blue */
+        .btn-leaderboard:hover { 
+            background-color: #2980b9; 
+            transform: translateY(-3px); 
+        }
+
+        .btn-profile { background-color: #f1c40f; color: #333; } /* Connect 4 Yellow */
+        .btn-profile:hover { 
+            background-color: #f39c12; 
+            transform: translateY(-3px); 
         }
     </style>
 </head>
@@ -41,8 +104,14 @@
 
     <main>
         <h1>Welcome to the Connect 4 Web Arena!</h1>
-        <p>This is the main content placeholder. Customize this text for each page!</p>
+        <p class="subtitle">Drop your discs, challenge the AI, and climb the ranks.</p>
+
+        <div class="button-container">
+            <a href="ai-play.html" class="action-btn btn-play">Play vs AI</a>
+            <a href="leaderboard.html" class="action-btn btn-leaderboard">Leaderboard</a>
+            <a href="register-profile.html" class="action-btn btn-profile">Profile / Register</a>
+        </div>
     </main>
 
-    </body>
+</body>
 </html>

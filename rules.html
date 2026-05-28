@@ -22,14 +22,20 @@
         main {
             padding: 20px;
             font-family: Arial, sans-serif;
-            line-height: 1.6;
+            line-height: 1.6; /* Gives the text some breathing room */
         }
+        /* A simple container to make the rules look clean and organized */
         .rules-container {
-            max-width: 600px;
+            max-width: 800px;
             background-color: #f9f9f9;
-            padding: 20px;
+            padding: 25px;
             border-radius: 8px;
             border: 1px solid #ddd;
+            margin-top: 15px;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 5px;
         }
     </style>
 </head>
@@ -48,20 +54,38 @@
     </nav>
 
     <main>
+        <h1>Official Arena Rules</h1>
+        <p>Welcome to the rules page! Before you step into the Arena or challenge the AI, make sure you know how the game is played.</p>
+
         <div class="rules-container">
-            <h1>How to Play Connect 4</h1>
-            <p>Welcome to the Arena! The rules are simple, but mastering the game takes strategy.</p>
-            
-            <h3>Objective</h3>
-            <p>Be the first player to connect 4 of your colored discs in a row (either vertically, horizontally, or diagonally).</p>
-            
-            <h3>Gameplay</h3>
-            <ol>
-                <li>The game is played on a grid that is 7 columns wide and 6 rows high.</li>
-                <li>Players take turns dropping one of their discs into any of the 7 columns.</li>
-                <li>The disc will fall straight down, occupying the lowest available space within the column.</li>
-                <li>The game ends when a player successfully connects 4 discs, or when the board is completely full (resulting in a tie).</li>
-            </ol>
+            <h2>The Objective</h2>
+            <p>The goal of Connect 4 is simple: be the first player to form a continuous line of <strong>four</strong> of your own colored discs. This winning line can be horizontal, vertical, or diagonal.</p>
+
+            <hr>
+
+            <h2>Game Setup</h2>
+            <ul>
+                <li>The classic Connect 4 board consists of a grid with <strong>7 columns</strong> and <strong>6 rows</strong>.</li>
+                <li>There are two players. Each player is assigned a unique color (traditionally Red and Yellow).</li>
+            </ul>
+
+            <hr>
+
+            <h2>Taking Turns</h2>
+            <ul>
+                <li>Players decide who goes first.</li>
+                <li>On your turn, you must choose one of the 7 columns and "drop" a single disc into it.</li>
+                <li>Because of <strong>gravity</strong>, the disc will fall straight down and occupy the lowest available empty space within that specific column.</li>
+                <li>Players alternate turns dropping one disc at a time. You cannot skip your turn!</li>
+            </ul>
+
+            <hr>
+
+            <h2>Winning & Draws</h2>
+            <ul>
+                <li><strong>Victory:</strong> The exact moment a player connects four discs in a row, the game immediately ends, and that player is declared the Arena Champion!</li>
+                <li><strong>Draw:</strong> If the entire board fills up (all 42 slots are taken) and neither player has connected four discs, the game ends in a tie.</li>
+            </ul>
         </div>
     </main>
 

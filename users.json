@@ -1,72 +1,7 @@
 [
-    {
-        "id": "u001",
-        "username": "DemoPlayer1",
-        "email": "demo@connect4arena.com",
-        "color": "Red",
-        "bio": "I'm here to drop tokens and win games!",
-        "skill": "Intermediate",
-        "mode": "Local Couch Co-op",
-        "phrase": "Four in a row, let's go!",
-        "profilePic": null,
-        "dateCreated": "5/20/2025",
-        "wins": 15,
-        "losses": 4
-    },
-    {
-        "id": "u002",
-        "username": "DropZone_Queen",
-        "email": "queen@arena.com",
-        "color": "Yellow",
-        "bio": "I see three moves ahead. Do you?",
-        "skill": "Expert",
-        "mode": "Vs AI",
-        "phrase": "You never saw it coming.",
-        "profilePic": null,
-        "dateCreated": "5/19/2025",
-        "wins": 42,
-        "losses": 2
-    },
-    {
-        "id": "u003",
-        "username": "TokenTosser99",
-        "email": "toss@arena.com",
-        "color": "Red",
-        "bio": "Just here to have fun!",
-        "skill": "Beginner",
-        "mode": "Local Couch Co-op",
-        "phrase": "Every loss is a lesson.",
-        "profilePic": null,
-        "dateCreated": "5/18/2025",
-        "wins": 3,
-        "losses": 12
-    },
-    {
-        "id": "u004",
-        "username": "GridMaster",
-        "email": "grid@arena.com",
-        "color": "Yellow",
-        "bio": "The center column is always right.",
-        "skill": "Grandmaster",
-        "mode": "Vs AI",
-        "phrase": "Control the center, control the game.",
-        "profilePic": null,
-        "dateCreated": "5/17/2025",
-        "wins": 89,
-        "losses": 5
-    },
-    {
-        "id": "u005",
-        "username": "CasualCarla",
-        "email": "carla@arena.com",
-        "color": "Red",
-        "bio": "Playing between classes!",
-        "skill": "Beginner",
-        "mode": "Local Couch Co-op",
-        "phrase": "Win or lose, it's just a game.",
-        "profilePic": null,
-        "dateCreated": "5/16/2025",
-        "wins": 7,
-        "losses": 8
-    }
+    { "id": "u001", "username": "Admin", "skill": "Expert", "wins": 50 },
+    { "id": "u002", "username": "Player1", "skill": "Beginner", "wins": 2 },
+    { "id": "u003", "username": "Connect4King", "skill": "Intermediate", "wins": 15 },
+    { "id": "u004", "username": "YellowChecker", "skill": "Beginner", "wins": 0 },
+    { "id": "u005", "username": "DropItLikeItsHot", "skill": "Expert", "wins": 34 }
 ]
